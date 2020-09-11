@@ -2,8 +2,8 @@
 
 # path:       /home/klassiker/.local/share/repos/audio/audio.sh
 # author:     klassiker [mrdotx]
-# github:     https://github.com/mrdotx/shell
-# date:       2020-09-11T18:35:58+0200
+# github:     https://github.com/mrdotx/audio
+# date:       2020-09-11T19:27:09+0200
 
 script=$(basename "$0")
 help="$script [-h/--help] -- script to change audio output
