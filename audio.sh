@@ -3,7 +3,7 @@
 # path:       /home/klassiker/.local/share/repos/audio/audio.sh
 # author:     klassiker [mrdotx]
 # github:     https://github.com/mrdotx/audio
-# date:       2020-09-11T19:27:09+0200
+# date:       2020-09-12T10:37:39+0200
 
 script=$(basename "$0")
 help="$script [-h/--help] -- script to change audio output
@@ -13,8 +13,8 @@ help="$script [-h/--help] -- script to change audio output
   Settings:
     [-tog]    = toggle output from analog to hdmi stereo
     [-mute]   = mute volume
-    [-inc]    = increase in percent (0-100%)
-    [-dec]    = decrease in percent (0-100%)
+    [-inc]    = increase in percent (0-100)
+    [-dec]    = decrease in percent (0-100)
     [percent] = how much percent to increase/decrease the brightness
 
   Examples:
@@ -22,9 +22,6 @@ help="$script [-h/--help] -- script to change audio output
     $script -mute
     $script -inc 10
     $script -dec 10"
-
-option=$1
-percent=$2
 
 # use pulseaudio (1) or alsa (0)
 pulse=0
@@ -66,22 +63,28 @@ alsa() {
     exit 0
 }
 
-if [ "$1" = "-tog" ]; then
-    [ $pulse = 1 ] && pulseaudio
-    [ $pulse = 0 ] && alsa
-elif [ "$1" = "-mute" ]; then
-    [ $pulse = 1 ] && pactl set-sink-mute "$pacmd_sink" toggle
-    [ $pulse = 0 ] && amixer set Master toggle
-fi
+volume() {
+        [ -z "$2" ] && printf "%s\n" "$help" && exit 1
+        [ $pulse = 1 ] && pactl set-sink-volume "$pacmd_sink" "$1$2%"
+        [ $pulse = 0 ] && amixer set Master "$2%$1"
+}
 
-if [ "$1" = "-h" ] || [ "$1" = "--help" ] || [ -z "$2" ] || [ $# -eq 0 ]; then
-    printf "%s\n" "$help"
-fi
-
-if [ "$option" = "-inc" ]; then
-    [ $pulse = 1 ] && pactl set-sink-volume "$pacmd_sink" +"$percent"%
-    [ $pulse = 0 ] && amixer set Master "$percent"%+
-elif [ "$option" = "-dec" ]; then
-    [ $pulse = 1 ] && pactl set-sink-volume "$pacmd_sink" -"$percent"%
-    [ $pulse = 0 ] && amixer set Master "$percent"%-
-fi
+case "$1" in
+    -tog)
+        [ $pulse = 1 ] && pulseaudio
+        [ $pulse = 0 ] && alsa
+        ;;
+    -mute)
+        [ $pulse = 1 ] && pactl set-sink-mute "$pacmd_sink" toggle
+        [ $pulse = 0 ] && amixer set Master toggle
+        ;;
+    -inc)
+        volume "+" "$2"
+        ;;
+    -dec)
+        volume "-" "$2"
+        ;;
+    *)
+        printf "%s\n" "$help"
+        ;;
+esac
