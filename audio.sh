@@ -3,7 +3,7 @@
 # path:       /home/klassiker/.local/share/repos/audio/audio.sh
 # author:     klassiker [mrdotx]
 # github:     https://github.com/mrdotx/audio
-# date:       2020-09-12T14:27:07+0200
+# date:       2020-09-12T15:40:33+0200
 
 script=$(basename "$0")
 help="$script [-h/--help] -- script to change audio output
@@ -45,7 +45,6 @@ pulseaudio() {
         pacmd set-card-profile 0 "output:analog-stereo+input:analog-stereo"
         pactl set-sink-volume $((pacmd_sink+2)) 25%
     fi
-    exit 0
 }
 
 alsa() {
@@ -60,7 +59,6 @@ alsa() {
     else
         alsadevice 7
     fi
-    exit 0
 }
 
 volume() {
