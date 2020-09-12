@@ -3,7 +3,7 @@
 # path:       /home/klassiker/.local/share/repos/audio/audio.sh
 # author:     klassiker [mrdotx]
 # github:     https://github.com/mrdotx/audio
-# date:       2020-09-12T10:37:39+0200
+# date:       2020-09-12T14:27:07+0200
 
 script=$(basename "$0")
 help="$script [-h/--help] -- script to change audio output
@@ -70,6 +70,9 @@ volume() {
 }
 
 case "$1" in
+    -h | --help)
+        printf "%s\n" "$help"
+        ;;
     -tog)
         [ $pulse = 1 ] && pulseaudio
         [ $pulse = 0 ] && alsa
@@ -86,5 +89,6 @@ case "$1" in
         ;;
     *)
         printf "%s\n" "$help"
+        exit 1
         ;;
 esac
