@@ -3,7 +3,7 @@
 # path:       /home/klassiker/.local/share/repos/audio/audio.sh
 # author:     klassiker [mrdotx]
 # github:     https://github.com/mrdotx/audio
-# date:       2020-09-12T15:40:33+0200
+# date:       2020-09-13T10:48:05+0200
 
 script=$(basename "$0")
 help="$script [-h/--help] -- script to change audio output
@@ -62,9 +62,13 @@ alsa() {
 }
 
 volume() {
-        [ -z "$2" ] && printf "%s\n" "$help" && exit 1
+    if [ "$2" -ge 0 ] && [ "$2" -le 100 ]; then
         [ $pulse = 1 ] && pactl set-sink-volume "$pacmd_sink" "$1$2%"
         [ $pulse = 0 ] && amixer set Master "$2%$1"
+    else
+        printf "%s\n" "$help"
+        exit 1
+    fi
 }
 
 case "$1" in
