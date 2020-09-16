@@ -3,7 +3,7 @@
 # path:       /home/klassiker/.local/share/repos/audio/audio.sh
 # author:     klassiker [mrdotx]
 # github:     https://github.com/mrdotx/audio
-# date:       2020-09-13T10:48:05+0200
+# date:       2020-09-16T09:48:28+0200
 
 script=$(basename "$0")
 help="$script [-h/--help] -- script to change audio output
@@ -54,7 +54,7 @@ alsa() {
         printf "defaults.pcm.!device %s" "$1" >> "$HOME/.asoundrc"
     }
 
-    if grep -q "defaults.pcm.!device 7" "$HOME/.asoundrc"; then
+    if grep -q -s "defaults.pcm.!device 7" "$HOME/.asoundrc"; then
         alsadevice 0
     else
         alsadevice 7
@@ -64,7 +64,7 @@ alsa() {
 volume() {
     if [ "$2" -ge 0 ] && [ "$2" -le 100 ]; then
         [ $pulse = 1 ] && pactl set-sink-volume "$pacmd_sink" "$1$2%"
-        [ $pulse = 0 ] && amixer set Master "$2%$1"
+        [ $pulse = 0 ] && amixer -q set Master "$2%$1"
     else
         printf "%s\n" "$help"
         exit 1
@@ -81,7 +81,7 @@ case "$1" in
         ;;
     -mute)
         [ $pulse = 1 ] && pactl set-sink-mute "$pacmd_sink" toggle
-        [ $pulse = 0 ] && amixer set Master toggle
+        [ $pulse = 0 ] && amixer -q set Master toggle
         ;;
     -inc)
         volume "+" "$2"
