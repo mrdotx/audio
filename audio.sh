@@ -3,7 +3,10 @@
 # path:       /home/klassiker/.local/share/repos/audio/audio.sh
 # author:     klassiker [mrdotx]
 # github:     https://github.com/mrdotx/audio
-# date:       2020-09-16T09:48:28+0200
+# date:       2020-10-18T10:25:35+0200
+
+# use pulseaudio (1) or alsa (0)
+pulse=0
 
 script=$(basename "$0")
 help="$script [-h/--help] -- script to change audio output
@@ -22,9 +25,6 @@ help="$script [-h/--help] -- script to change audio output
     $script -mute
     $script -inc 10
     $script -dec 10"
-
-# use pulseaudio (1) or alsa (0)
-pulse=0
 
 [ $pulse = 1 ] \
     && pacmd_sink=$(pacmd list-sinks \
