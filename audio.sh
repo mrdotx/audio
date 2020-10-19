@@ -3,7 +3,7 @@
 # path:       /home/klassiker/.local/share/repos/audio/audio.sh
 # author:     klassiker [mrdotx]
 # github:     https://github.com/mrdotx/audio
-# date:       2020-10-18T10:25:35+0200
+# date:       2020-10-19T19:03:38+0200
 
 # use pulseaudio (1) or alsa (0)
 pulse=0
@@ -11,20 +11,22 @@ pulse=0
 script=$(basename "$0")
 help="$script [-h/--help] -- script to change audio output
   Usage:
-    $script [-tog/-inc/-dec/-mute] [percent]
+    $script [-inc/-dec/-abs/-mute/-tog] [percent]
 
   Settings:
-    [-tog]    = toggle output from analog to hdmi stereo
-    [-mute]   = mute volume
     [-inc]    = increase in percent (0-100)
     [-dec]    = decrease in percent (0-100)
-    [percent] = how much percent to increase/decrease the brightness
+    [-abs]    = absolute volume in percent (0-100)
+    [percent] = how much percent to increase/decrease the volume
+    [-mute]   = mute volume
+    [-tog]    = toggle output from analog to hdmi stereo
 
   Examples:
-    $script -tog
-    $script -mute
     $script -inc 10
-    $script -dec 10"
+    $script -dec 10
+    $script -abs 36
+    $script -mute
+    $script -tog"
 
 [ $pulse = 1 ] \
     && pacmd_sink=$(pacmd list-sinks \
@@ -62,9 +64,20 @@ alsa() {
 }
 
 volume() {
-    if [ "$2" -ge 0 ] && [ "$2" -le 100 ]; then
-        [ $pulse = 1 ] && pactl set-sink-volume "$pacmd_sink" "$1$2%"
-        [ $pulse = 0 ] && amixer -q set Master "$2%$1"
+    if [ "$#" -eq 2 ] \
+        && [ "$2" -ge 0 ] > /dev/null 2>&1 \
+        && [ "$2" -le 100 ] > /dev/null 2>&1; then
+            [ $pulse = 1 ] \
+                && pactl set-sink-volume "$pacmd_sink" "$1$2%"
+            [ $pulse = 0 ] \
+                && amixer -q set Master "$2%$1"
+    elif [ "$#" -eq 1 ] \
+        && [ "$1" -ge 0 ] > /dev/null 2>&1 \
+        && [ "$1" -le 100 ] > /dev/null 2>&1; then
+            [ $pulse = 1 ] \
+                && pactl set-sink-volume "$pacmd_sink" "$1%"
+            [ $pulse = 0 ] \
+                && amixer -q set Master "$1%"
     else
         printf "%s\n" "$help"
         exit 1
@@ -75,19 +88,26 @@ case "$1" in
     -h | --help)
         printf "%s\n" "$help"
         ;;
-    -tog)
-        [ $pulse = 1 ] && pulseaudio
-        [ $pulse = 0 ] && alsa
-        ;;
-    -mute)
-        [ $pulse = 1 ] && pactl set-sink-mute "$pacmd_sink" toggle
-        [ $pulse = 0 ] && amixer -q set Master toggle
-        ;;
     -inc)
         volume "+" "$2"
         ;;
     -dec)
         volume "-" "$2"
+        ;;
+    -abs)
+        volume "$2"
+        ;;
+    -mute)
+        [ $pulse = 1 ] \
+            && pactl set-sink-mute "$pacmd_sink" toggle
+        [ $pulse = 0 ] \
+            && amixer -q set Master toggle
+        ;;
+    -tog)
+        [ $pulse = 1 ] \
+            && pulseaudio
+        [ $pulse = 0 ] \
+            && alsa
         ;;
     *)
         printf "%s\n" "$help"
