@@ -1,9 +1,9 @@
 #!/bin/sh
 
-# path:       /home/klassiker/.local/share/repos/audio/audio.sh
-# author:     klassiker [mrdotx]
-# github:     https://github.com/mrdotx/audio
-# date:       2020-10-19T19:03:38+0200
+# path:   /home/klassiker/.local/share/repos/audio/audio.sh
+# author: klassiker [mrdotx]
+# github: https://github.com/mrdotx/audio
+# date:   2021-01-15T13:27:23+0100
 
 # use pulseaudio (1) or alsa (0)
 pulse=0
